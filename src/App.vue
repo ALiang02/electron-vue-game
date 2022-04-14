@@ -1,30 +1,53 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <el-row class="main">
+    <el-col :span='4'>
+      <el-menu text-color="#000000" active-text-color="#409EFF" router default-active="1">
+        <el-menu-item index='1' :route="isInRoom">
+          <span class="menu">五子棋</span>
+        </el-menu-item>
+        <el-menu-item index='2' route="/wuziqi">
+          <span class="menu">棋盘</span>
+        </el-menu-item>
+        <el-menu-item index='3' route="/add">
+          <span class="menu">新建</span>
+        </el-menu-item>
+      </el-menu>
+    </el-col>
+    <el-col :span='20'>
+      <router-view />
+    </el-col>
+  </el-row>
 </template>
-
+<script>
+export default {
+  computed: {
+    isInRoom () {
+      return this.$store.state.isInRoom ? '/wuziqi' : '/room'
+    }
+  },
+  mounted () {}
+}
+</script>
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  height: 100%;
+  width: 100%;
+  display: flex;
 }
-
-nav {
-  padding: 30px;
+.main {
+  width: 100%;
 }
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+.menu {
+  font-size: 1.2rem;
 }
 </style>
