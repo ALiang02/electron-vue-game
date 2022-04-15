@@ -13,8 +13,8 @@
         <el-menu-item index="2" route="/wuziqi">
           <span class="menu">棋盘</span>
         </el-menu-item>
-        <el-menu-item index="3" route="/add">
-          <span class="menu">新建</span>
+        <el-menu-item index="3" route="/user">
+          <span class="menu">{{ userName }}</span>
         </el-menu-item>
       </el-menu>
     </el-col>
@@ -28,6 +28,9 @@ export default {
   computed: {
     isInRoom() {
       return this.$store.state.isInRoom ? '/wuziqi' : '/room'
+    },
+    userName() {
+      return this.$store.state.user.name
     },
   },
   mounted() {},

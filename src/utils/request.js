@@ -4,7 +4,7 @@ import store from '../store'
 const service = axios.create({
   method: 'post',
   baseURL: 'http://127.0.0.1:3000/data/',
-  timeout: 10000,
+  timeout: 5000,
   // transformRequest: data => {
   //   let transData = new URLSearchParams(); // django接收的数据应该为URLSearchParams对象
   //   transData.append("data", JSON.stringify(data)); // 将data对象转换成JSON字符串传输
@@ -30,7 +30,7 @@ export function RPC(url, data) {
         }
       })
       .catch((err) => {
-        reject(err.data.message)
+        reject(err)
       })
   })
 }

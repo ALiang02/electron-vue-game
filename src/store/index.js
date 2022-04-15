@@ -9,6 +9,10 @@ export default createStore({
     keepTimes: 0,
     isInRoom: false,
     userId: '',
+    user: {
+      name: '',
+      password: '',
+    },
     room: {
       id: '041201',
       name: '我的伟大房间',
@@ -32,6 +36,15 @@ export default createStore({
     },
     SET_USER_ID: (state, userId) => {
       state.userId = userId
+    },
+    SET_USER_NAME: (state, userName) => {
+      state.user.name = userName
+    },
+    SET_USER_PASSWORD: (state, userPassword) => {
+      state.user.password = userPassword
+    },
+    SET_USER: (state, user) => {
+      state.user = user
     },
     SET_ROOM_ID: (state, roomId) => {
       state.room.id = roomId
