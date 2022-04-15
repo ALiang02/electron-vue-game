@@ -31,8 +31,9 @@
         round
         size="large"
         type="primary"
-        @click="roomListRefresh"
-        >刷新
+        @click="roomQuickJoin"
+        v-show="false"
+        >快速加入
       </el-button>
     </el-col>
     <el-col :span="4">
@@ -41,8 +42,8 @@
         round
         size="large"
         type="primary"
-        @click="roomQuickJoin"
-        >快速加入
+        @click="roomListRefresh"
+        >刷新
       </el-button>
     </el-col>
     <el-col :span="4">
@@ -62,6 +63,7 @@
 import RoomItem from './RoomItem'
 import { RPC } from '../utils/request'
 import { io } from 'socket.io-client'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   setup() {},
   components: {
@@ -135,35 +137,58 @@ export default {
     }
   },
   methods: {
-    roomJoin(roomId) {
-      const data = { roomId }
-      RPC('room_join', data).then((data) => {
-        this.$router.push('/wuziqi')
-        this.$store.commit('SET_IS_IN_ROOM', true)
-        this.$store.commit('SET_ROOM', data.room)
-      })
+    roomJoin(room) {
+      RPC('room_join', { room: { id: room.id } })
+        .then(() => {
+          this.$router.push('/wuziqi')
+          this.$store.commit('SET_IS_IN_ROOM', true)
+          this.$store.commit('SET_ROOM', {
+            id: room.id,
+            name: room.name,
+            host: room.host,
+            gamer: this.$store.state.user.name,
+            status: 1,
+          })
+        })
+        .catch((e) =>
+          ElMessage({ message: '进入房间失败：' + e, type: 'error' })
+        )
     },
     roomCreate() {
-      this.$store.commit('SET_USER_ID', '45692584')
-      RPC('room_create', { room: { name: '交界地' } }).then((data) => {
-        this.$router.push('/wuziqi')
-        this.$store.commit('SET_IS_IN_ROOM', true)
-        this.$store.commit('SET_ROOM', data.room)
+      ElMessageBox.prompt('请输入房间名', '选项', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+      }).then(({ value }) => {
+        RPC('room_create', { room: { name: value } })
+          .then((data) => {
+            this.$router.push('/wuziqi')
+            this.$store.commit('SET_IS_IN_ROOM', true)
+            this.$store.commit('SET_ROOM', data.room)
+          })
+          .catch((e) =>
+            ElMessage({ message: '创建房间失败：' + e, type: 'error' })
+          )
       })
     },
     roomQuickJoin() {
-      RPC('room_quick_join').then((data) => {
-        this.$router.push('/wuziqi')
-        this.$store.commit('SET_IS_IN_ROOM', true)
-        this.$store.commit('SET_ROOM', data.room)
-      })
+      RPC('room_quick_join')
+        .then((data) => {
+          this.$router.push('/wuziqi')
+          this.$store.commit('SET_IS_IN_ROOM', true)
+          this.$store.commit('SET_ROOM', data.room)
+        })
+        .catch((e) =>
+          ElMessage({ message: '进入房间失败：' + e, type: 'error' })
+        )
     },
     roomListRefresh() {
-      // RPC('hello')
-      // this.hellows()
       RPC('room_list')
-        .then((data) => (this.rooms = data.rooms))
-        .catch((e) => console.log(e))
+        .then((data) => {
+          this.rooms = data.rooms
+        })
+        .catch((e) =>
+          ElMessage({ message: '获取房间列表失败：' + e, type: 'error' })
+        )
     },
     hello() {
       this.hellows()
@@ -182,7 +207,9 @@ export default {
       })
     },
   },
-  mounted() {},
+  mounted() {
+    this.roomListRefresh()
+  },
 }
 </script>
 <style scope>

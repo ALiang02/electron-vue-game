@@ -24,6 +24,7 @@
             type="primary"
             round
             @click="roomChange"
+            v-show="false"
             >更换房间
           </el-button>
         </el-col>
@@ -43,6 +44,7 @@
 </template>
 <script>
 import { RPC } from '../utils/request'
+import { ElMessage } from 'element-plus'
 export default {
   data() {
     return {
@@ -76,13 +78,21 @@ export default {
       })
     },
     roomQuit() {
-      this.$router.push('/room')
-      this.$store.commit('SET_IS_IN_ROOM', false)
-      // RPC('room_quit').then((data) => {
-      //   this.$router.push('/room')
-      //   this.$store.commit('SET_IS_IN_ROOM', false)
-      //   this.$store.commit('SET_ROOM', data.room)
-      // })
+      RPC('room_quit')
+        .then(() => {
+          this.$router.push('/room')
+          this.$store.commit('SET_IS_IN_ROOM', false)
+          this.$store.commit('SET_ROOM', {
+            id: '?',
+            name: '?',
+            status: -1,
+            host: '?',
+            gamer: '?',
+          })
+        })
+        .catch((e) =>
+          ElMessage({ message: '退出房间失败：' + e, type: 'error' })
+        )
     },
     qipanInit() {
       const qipan = document.getElementById('qipan')

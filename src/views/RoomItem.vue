@@ -7,7 +7,7 @@
       <el-button
         round
         :disabled="room.status !== 0"
-        @click="this.$emit('onRoomJoin', room.id)"
+        @click="this.$emit('onRoomJoin', room)"
         >加入房间
       </el-button>
     </el-col>
