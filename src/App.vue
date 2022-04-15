@@ -1,19 +1,24 @@
 <template>
   <el-row class="main">
-    <el-col :span='4'>
-      <el-menu text-color="#000000" active-text-color="#409EFF" router default-active="1">
-        <el-menu-item index='1' :route="isInRoom">
+    <el-col :span="4">
+      <el-menu
+        text-color="#000000"
+        active-text-color="#409EFF"
+        router
+        default-active="1"
+      >
+        <el-menu-item index="1" :route="isInRoom">
           <span class="menu">五子棋</span>
         </el-menu-item>
-        <el-menu-item index='2' route="/wuziqi">
+        <el-menu-item index="2" route="/wuziqi">
           <span class="menu">棋盘</span>
         </el-menu-item>
-        <el-menu-item index='3' route="/add">
+        <el-menu-item index="3" route="/add">
           <span class="menu">新建</span>
         </el-menu-item>
       </el-menu>
     </el-col>
-    <el-col :span='20'>
+    <el-col :span="20">
       <router-view />
     </el-col>
   </el-row>
@@ -21,11 +26,11 @@
 <script>
 export default {
   computed: {
-    isInRoom () {
+    isInRoom() {
       return this.$store.state.isInRoom ? '/wuziqi' : '/room'
-    }
+    },
   },
-  mounted () {}
+  mounted() {},
 }
 </script>
 <style>

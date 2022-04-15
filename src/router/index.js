@@ -4,18 +4,20 @@ const routes = [
   {
     path: '/wuziqi',
     name: 'WuziQi',
-    component: () => import(/* webpackChunkName: "add" */ '../views/WuziQi.vue')
+    component: () =>
+      import(/* webpackChunkName: "add" */ '../views/WuziQi.vue'),
   },
   {
     path: '/room',
     name: 'RoomList',
-    component: () => import(/* webpackChunkName: "add" */ '../views/RoomList.vue')
-  }
+    component: () =>
+      import(/* webpackChunkName: "add" */ '../views/RoomList.vue'),
+  },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 })
 
 export default router

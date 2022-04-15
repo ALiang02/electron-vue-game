@@ -1,9 +1,9 @@
 <template>
   <el-row style="text-align: center">
-    <el-col class="room-name">{{room.name+room.id}}</el-col>
-    <el-col class="room-player" :span="4">{{room.host}}</el-col>
+    <el-col class="room-name">{{ room.name + room.id }}</el-col>
+    <el-col class="room-player" :span="4">{{ room.host }}</el-col>
     <el-col class="room-player" :span="16">VS</el-col>
-    <el-col class="room-player" :span="4">{{room.gamer}}</el-col>
+    <el-col class="room-player" :span="4">{{ room.gamer }}</el-col>
     <el-col class="qipan-header">
       <canvas id="qipan" width="601" height="601" @click="getXY">
         <!-- 切勿通过style或script标签修改canvas的width和height属性 -->
@@ -13,57 +13,69 @@
     <el-col>
       <el-row class="qipan-footer" justify="center">
         <el-col :span="6">
-          <el-button class="qipan-btn" size="large" type="primary" round>{{beginText}}</el-button>
+          <el-button class="qipan-btn" size="large" type="primary" round>{{
+            beginText
+          }}</el-button>
         </el-col>
         <el-col :span="6">
-          <el-button class="qipan-btn" size="large" type="primary" round @click="roomChange">更换房间
+          <el-button
+            class="qipan-btn"
+            size="large"
+            type="primary"
+            round
+            @click="roomChange"
+            >更换房间
           </el-button>
         </el-col>
         <el-col :span="6">
-          <el-button class="qipan-btn" size="large" type="primary" round @click="roomQuit">退出房间
+          <el-button
+            class="qipan-btn"
+            size="large"
+            type="primary"
+            round
+            @click="roomQuit"
+            >退出房间
           </el-button>
         </el-col>
-
       </el-row>
     </el-col>
-
   </el-row>
 </template>
 <script>
 import { RPC } from '../utils/request'
 export default {
-  data () {
+  data() {
     return {
       qizipre: {
         x: -1,
-        y: -1
+        y: -1,
       },
-      qizis: []
+      qizis: [],
     }
   },
   computed: {
-    room () {
+    room() {
       console.log(this.$store.state.room)
       return this.$store.state.room
     },
-    isHost () {
+    isHost() {
       return this.$store.state.room.host === this.$store.state.userName
     },
-    beginText () {
+    beginText() {
       if (this.isHost) {
         return '开始游戏'
       } else {
         return this.$store.state.room.status !== 2 ? '准备' : '取消准备'
       }
-    }
+    },
   },
   methods: {
-    roomChange () {
+    roomChange() {
       RPC('room_change').then((data) => {
         this.$store.commit('SET_ROOM', data.room)
       })
     },
-    roomQuit () {
+    roomQuit() {
       this.$router.push('/room')
       this.$store.commit('SET_IS_IN_ROOM', false)
       // RPC('room_quit').then((data) => {
@@ -72,7 +84,7 @@ export default {
       //   this.$store.commit('SET_ROOM', data.room)
       // })
     },
-    qipanInit () {
+    qipanInit() {
       const qipan = document.getElementById('qipan')
       const cxt = qipan.getContext('2d')
       cxt.lineWidth = 1
@@ -111,7 +123,7 @@ export default {
         this.qiziInit(this.qizis[i].x, this.qizis[i].y, i)
       }
     },
-    qiziPreInit (x, y) {
+    qiziPreInit(x, y) {
       // x,y是坐标,画上预选位置
       if (x === -1 || y === -1) {
         return
@@ -137,7 +149,7 @@ export default {
       cxt.lineTo(x - 2 + 0.5 + 20, y - 16 + 0.5 + 20)
       cxt.stroke()
     },
-    qiziInit (x, y, n) {
+    qiziInit(x, y, n) {
       // x,y是棋子坐标,n是棋子次序,画上棋子
       x *= 40
       y *= 40
@@ -155,7 +167,7 @@ export default {
       cxt.closePath()
       cxt.fill()
     },
-    getXY (e) {
+    getXY(e) {
       // 获取x,y坐标
       let x = e.offsetX - 20
       let y = e.offsetY - 20
@@ -169,7 +181,7 @@ export default {
         if (x === this.qizipre.x && y === this.qizipre.y) {
           this.qizis.push({
             x,
-            y
+            y,
           })
           this.qizipre.x = -1
           this.qizipre.y = -1
@@ -178,11 +190,11 @@ export default {
         }
         this.qipanInit()
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.qipanInit()
-  }
+  },
 }
 </script>
 <style scoped>

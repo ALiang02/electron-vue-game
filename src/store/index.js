@@ -14,9 +14,8 @@ export default createStore({
       name: '我的伟大房间',
       status: -1,
       host: '玩家A',
-      gamer: '玩家B'
-    }
-
+      gamer: '玩家B',
+    },
   },
   mutations: {
     SET_TODO_ARRAY: (state, todoArray) => {
@@ -51,6 +50,6 @@ export default createStore({
     },
     SET_ROOM: (state, room) => {
       Object.assign(state.room, room)
-    }
-  }
+    },
+  },
 })
