@@ -62,6 +62,7 @@
 <script>
 import RoomItem from './RoomItem'
 import { RPC } from '../utils/request'
+import { socket } from '../utils/ws'
 import { io } from 'socket.io-client'
 import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
@@ -149,6 +150,10 @@ export default {
             gamer: this.$store.state.user.name,
             status: 1,
           })
+          socket.emit('room_join', {
+            room: room.id,
+            user: this.$store.state.user.name,
+          })
         })
         .catch((e) =>
           ElMessage({ message: '进入房间失败：' + e, type: 'error' })
@@ -164,6 +169,9 @@ export default {
             this.$router.push('/wuziqi')
             this.$store.commit('SET_IS_IN_ROOM', true)
             this.$store.commit('SET_ROOM', data.room)
+            socket.emit('room_create', {
+              room: data.room.id,
+            })
           })
           .catch((e) =>
             ElMessage({ message: '创建房间失败：' + e, type: 'error' })

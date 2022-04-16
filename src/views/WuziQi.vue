@@ -3,7 +3,7 @@
     <el-col class="room-name">{{ room.name + room.id }}</el-col>
     <el-col class="room-player" :span="4">{{ room.host }}</el-col>
     <el-col class="room-player" :span="16">VS</el-col>
-    <el-col class="room-player" :span="4">{{ room.gamer }}</el-col>
+    <el-col class="room-player" :span="4">{{ room.gamer }}{{ isReady }}</el-col>
     <el-col class="qipan-header">
       <canvas id="qipan" width="601" height="601" @click="getXY">
         <!-- 切勿通过style或script标签修改canvas的width和height属性 -->
@@ -13,9 +13,14 @@
     <el-col>
       <el-row class="qipan-footer" justify="center">
         <el-col :span="6">
-          <el-button class="qipan-btn" size="large" type="primary" round>{{
-            beginText
-          }}</el-button>
+          <el-button
+            class="qipan-btn"
+            size="large"
+            type="primary"
+            @click="roomStatusChange"
+            round
+            >{{ beginText }}</el-button
+          >
         </el-col>
         <el-col :span="6">
           <el-button
@@ -23,7 +28,6 @@
             size="large"
             type="primary"
             round
-            @click="roomChange"
             v-show="false"
             >更换房间
           </el-button>
@@ -45,6 +49,7 @@
 <script>
 import { RPC } from '../utils/request'
 import { ElMessage } from 'element-plus'
+import { socket } from '../utils/ws'
 export default {
   data() {
     return {
@@ -61,25 +66,83 @@ export default {
       return this.$store.state.room
     },
     isHost() {
-      return this.$store.state.room.host === this.$store.state.userName
+      return this.$store.state.room.host === this.$store.state.user.name
+    },
+    isReady() {
+      return this.$store.state.room.status === 2 ? '已准备' : ''
     },
     beginText() {
-      if (this.isHost) {
-        return '开始游戏'
+      const room_status = this.$store.state.room.status
+      if (room_status < 3) {
+        if (this.isHost) {
+          return '开始游戏'
+        } else {
+          return room_status !== 2 ? '准备' : '取消准备'
+        }
       } else {
-        return this.$store.state.room.status !== 2 ? '准备' : '取消准备'
+        return '投降'
       }
     },
   },
   methods: {
-    roomChange() {
-      RPC('room_change').then((data) => {
-        this.$store.commit('SET_ROOM', data.room)
-      })
+    // roomChange() {
+    //   RPC('room_change').then((data) => {
+    //     this.$store.commit('SET_ROOM', data.room)
+    //   })
+    // },
+    roomStatusChange() {
+      switch (this.beginText) {
+        case '准备':
+          RPC('room_ready')
+            .then(() => {
+              this.$store.commit('SET_ROOM_STATUS', 2)
+              socket.emit('room_ready', {
+                room: this.$store.state.room.id,
+                status: 2,
+              })
+            })
+            .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
+
+          break
+        case '取消准备':
+          RPC('room_ready_cancel')
+            .then(() => {
+              this.$store.commit('SET_ROOM_STATUS', 1)
+              socket.emit('room_ready_cancel', {
+                room: this.$store.state.room.id,
+                status: 1,
+              })
+            })
+            .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
+          break
+        case '开始游戏':
+          if (this.isReady) {
+            RPC('room_start')
+              .then(() => {
+                this.$store.commit('SET_ROOM_STATUS', 3)
+                socket.emit('room_start', {
+                  room: this.$store.state.room.id,
+                  status: 3,
+                })
+                ElMessage({ message: '游戏开始', type: 'success' })
+              })
+              .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
+          } else {
+            ElMessage({ message: '玩家未准备', type: 'error' })
+          }
+          break
+        case '投降':
+          ElMessage({ message: '还没做', type: 'warn' })
+          break
+      }
     },
     roomQuit() {
       RPC('room_quit')
         .then(() => {
+          socket.emit('room_quit', {
+            room: this.$store.state.room.id,
+            isHost: this.isHost,
+          })
           this.$router.push('/room')
           this.$store.commit('SET_IS_IN_ROOM', false)
           this.$store.commit('SET_ROOM', {

@@ -49,7 +49,7 @@ export default createStore({
     SET_ROOM_ID: (state, roomId) => {
       state.room.id = roomId
     },
-    SET_ROOM_Name: (state, roomName) => {
+    SET_ROOM_NAME: (state, roomName) => {
       state.room.name = roomName
     },
     SET_ROOM_STATUS: (state, roomStatus) => {
