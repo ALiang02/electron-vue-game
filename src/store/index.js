@@ -8,8 +8,8 @@ export default createStore({
     finishedArray: [],
     keepTimes: 0,
     isInRoom: false,
-    userId: '',
     user: {
+      id: '',
       name: '',
       password: '',
     },
@@ -19,6 +19,29 @@ export default createStore({
       status: -1,
       host: '玩家A',
       gamer: '玩家B',
+    },
+  },
+  getters: {
+    isInRoomText(state) {
+      return state.isInRoom ? '/wuziqi' : '/room'
+    },
+    isHost(state) {
+      return state.room.host === state.user.name
+    },
+    isReady(state) {
+      return state.room.status === 2 ? '已准备' : ''
+    },
+    beginText(state, getters) {
+      const room_status = state.room.status
+      if (room_status < 3) {
+        if (getters.isHost) {
+          return '开始游戏'
+        } else {
+          return room_status !== 2 ? '准备' : '取消准备'
+        }
+      } else {
+        return '投降'
+      }
     },
   },
   mutations: {
@@ -35,7 +58,7 @@ export default createStore({
       state.isInRoom = isInRoom
     },
     SET_USER_ID: (state, userId) => {
-      state.userId = userId
+      state.user.id = userId
     },
     SET_USER_NAME: (state, userName) => {
       state.user.name = userName
@@ -44,7 +67,7 @@ export default createStore({
       state.user.password = userPassword
     },
     SET_USER: (state, user) => {
-      state.user = user
+      Object.assign(state.user, user)
     },
     SET_ROOM_ID: (state, roomId) => {
       state.room.id = roomId

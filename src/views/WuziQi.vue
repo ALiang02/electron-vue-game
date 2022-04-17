@@ -1,11 +1,21 @@
 <template>
   <el-row style="text-align: center">
-    <el-col class="room-name">{{ room.name + room.id }}</el-col>
-    <el-col class="room-player" :span="4">{{ room.host }}</el-col>
+    <el-col class="room-name">{{
+      store.state.room.name + store.state.room.id
+    }}</el-col>
+    <el-col class="room-player" :span="4">{{ store.state.room.host }}</el-col>
     <el-col class="room-player" :span="16">VS</el-col>
-    <el-col class="room-player" :span="4">{{ room.gamer }}{{ isReady }}</el-col>
+    <el-col class="room-player" :span="4"
+      >{{ store.state.room.gamer }}{{ store.getters.isReady }}</el-col
+    >
     <el-col class="qipan-header">
-      <canvas id="qipan" width="601" height="601" @click="getXY">
+      <canvas
+        id="qipan"
+        ref="ref_qipan"
+        width="601"
+        height="601"
+        @click="getXY"
+      >
         <!-- 切勿通过style或script标签修改canvas的width和height属性 -->
       </canvas>
     </el-col>
@@ -19,7 +29,7 @@
             type="primary"
             @click="roomStatusChange"
             round
-            >{{ beginText }}</el-button
+            >{{ store.getters.beginText }}</el-button
           >
         </el-col>
         <el-col :span="6">
@@ -46,230 +56,26 @@
     </el-col>
   </el-row>
 </template>
-<script>
-import { RPC } from '../utils/request'
-import { ElMessage } from 'element-plus'
-import { socket } from '../utils/ws'
-export default {
-  data() {
-    return {
-      qizipre: {
-        x: -1,
-        y: -1,
-      },
-      qizis: [],
-    }
-  },
-  computed: {
-    room() {
-      console.log(this.$store.state.room)
-      return this.$store.state.room
-    },
-    isHost() {
-      return this.$store.state.room.host === this.$store.state.user.name
-    },
-    isReady() {
-      return this.$store.state.room.status === 2 ? '已准备' : ''
-    },
-    beginText() {
-      const room_status = this.$store.state.room.status
-      if (room_status < 3) {
-        if (this.isHost) {
-          return '开始游戏'
-        } else {
-          return room_status !== 2 ? '准备' : '取消准备'
-        }
-      } else {
-        return '投降'
-      }
-    },
-  },
-  methods: {
-    // roomChange() {
-    //   RPC('room_change').then((data) => {
-    //     this.$store.commit('SET_ROOM', data.room)
-    //   })
-    // },
-    roomStatusChange() {
-      switch (this.beginText) {
-        case '准备':
-          RPC('room_ready')
-            .then(() => {
-              this.$store.commit('SET_ROOM_STATUS', 2)
-              socket.emit('room_ready', {
-                room: this.$store.state.room.id,
-                status: 2,
-              })
-            })
-            .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
-
-          break
-        case '取消准备':
-          RPC('room_ready_cancel')
-            .then(() => {
-              this.$store.commit('SET_ROOM_STATUS', 1)
-              socket.emit('room_ready_cancel', {
-                room: this.$store.state.room.id,
-                status: 1,
-              })
-            })
-            .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
-          break
-        case '开始游戏':
-          if (this.isReady) {
-            RPC('room_start')
-              .then(() => {
-                this.$store.commit('SET_ROOM_STATUS', 3)
-                socket.emit('room_start', {
-                  room: this.$store.state.room.id,
-                  status: 3,
-                })
-                ElMessage({ message: '游戏开始', type: 'success' })
-              })
-              .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
-          } else {
-            ElMessage({ message: '玩家未准备', type: 'error' })
-          }
-          break
-        case '投降':
-          ElMessage({ message: '还没做', type: 'warn' })
-          break
-      }
-    },
-    roomQuit() {
-      RPC('room_quit')
-        .then(() => {
-          socket.emit('room_quit', {
-            room: this.$store.state.room.id,
-            isHost: this.isHost,
-          })
-          this.$router.push('/room')
-          this.$store.commit('SET_IS_IN_ROOM', false)
-          this.$store.commit('SET_ROOM', {
-            id: '?',
-            name: '?',
-            status: -1,
-            host: '?',
-            gamer: '?',
-          })
-        })
-        .catch((e) =>
-          ElMessage({ message: '退出房间失败：' + e, type: 'error' })
-        )
-    },
-    qipanInit() {
-      const qipan = document.getElementById('qipan')
-      const cxt = qipan.getContext('2d')
-      cxt.lineWidth = 1
-      cxt.strokeStyle = 'black'
-      cxt.fillStyle = '#E6A23C'
-      cxt.fillRect(0, 0, 601, 601)
-      for (let i = 0; i < 15; i++) {
-        cxt.moveTo(i * 40 + 0.5 + 20, 0 + 20)
-        cxt.lineTo(i * 40 + 0.5 + 20, 561 + 20)
-        cxt.moveTo(0 + 20, i * 40 + 0.5 + 20)
-        cxt.lineTo(561 + 20, i * 40 + 0.5 + 20)
-        // 1px问题，canvas的线条画法不一样，canvas的每条线都有一条无限细的“中线”，线条的宽度是从中线向两侧延伸的。
-      }
-      cxt.stroke()
-      cxt.fillStyle = '#000000'
-      cxt.beginPath()
-      cxt.arc(120 + 0.5 + 20, 120 + 0.5 + 20, 4, 0, Math.PI * 2)
-      cxt.closePath()
-      cxt.fill()
-      cxt.beginPath()
-      cxt.arc(440 + 0.5 + 20, 120 + 0.5 + 20, 4, 0, Math.PI * 2)
-      cxt.closePath()
-      cxt.fill()
-      cxt.beginPath()
-      cxt.arc(120 + 0.5 + 20, 440 + 0.5 + 20, 4, 0, Math.PI * 2)
-      cxt.closePath()
-      cxt.fill()
-      cxt.beginPath()
-      cxt.arc(440 + 0.5 + 20, 440 + 0.5 + 20, 4, 0, Math.PI * 2)
-      cxt.closePath()
-      cxt.fill()
-
-      this.qiziPreInit(this.qizipre.x, this.qizipre.y)
-
-      for (let i = 0; i < this.qizis.length; i++) {
-        this.qiziInit(this.qizis[i].x, this.qizis[i].y, i)
-      }
-    },
-    qiziPreInit(x, y) {
-      // x,y是坐标,画上预选位置
-      if (x === -1 || y === -1) {
-        return
-      }
-      x *= 40
-      y *= 40
-      const qipan = document.getElementById('qipan')
-      const cxt = qipan.getContext('2d')
-      cxt.moveTo(x + 16 + 0.5 + 20, y + 2 + 0.5 + 20)
-      cxt.lineTo(x + 2 + 0.5 + 20, y + 2 + 0.5 + 20)
-      cxt.lineTo(x + 2 + 0.5 + 20, y + 16 + 0.5 + 20)
-
-      cxt.moveTo(x - 16 + 0.5 + 20, y + 2 + 0.5 + 20)
-      cxt.lineTo(x - 2 + 0.5 + 20, y + 2 + 0.5 + 20)
-      cxt.lineTo(x - 2 + 0.5 + 20, y + 16 + 0.5 + 20)
-
-      cxt.moveTo(x + 16 + 0.5 + 20, y - 2 + 0.5 + 20)
-      cxt.lineTo(x + 2 + 0.5 + 20, y - 2 + 0.5 + 20)
-      cxt.lineTo(x + 2 + 0.5 + 20, y - 16 + 0.5 + 20)
-
-      cxt.moveTo(x - 16 + 0.5 + 20, y - 2 + 0.5 + 20)
-      cxt.lineTo(x - 2 + 0.5 + 20, y - 2 + 0.5 + 20)
-      cxt.lineTo(x - 2 + 0.5 + 20, y - 16 + 0.5 + 20)
-      cxt.stroke()
-    },
-    qiziInit(x, y, n) {
-      // x,y是棋子坐标,n是棋子次序,画上棋子
-      x *= 40
-      y *= 40
-      const qipan = document.getElementById('qipan')
-      const cxt = qipan.getContext('2d')
-
-      if (n % 2 === 0) {
-        cxt.fillStyle = '#000000'
-      } else {
-        cxt.fillStyle = '#ffffff'
-      }
-
-      cxt.beginPath()
-      cxt.arc(x + 0.5 + 20, y + 0.5 + 20, 18, 0, Math.PI * 2)
-      cxt.closePath()
-      cxt.fill()
-    },
-    getXY(e) {
-      // 获取x,y坐标
-      let x = e.offsetX - 20
-      let y = e.offsetY - 20
-
-      if (
-        ((x % 40 >= 0 && x % 40 <= 10) || (x % 40 >= 30 && x % 40 < 40)) &&
-        ((y % 40 >= 0 && y % 40 <= 10) || (y % 40 >= 30 && y % 40 < 40))
-      ) {
-        x = parseInt((x + 20) / 40)
-        y = parseInt((y + 20) / 40)
-        if (x === this.qizipre.x && y === this.qizipre.y) {
-          this.qizis.push({
-            x,
-            y,
-          })
-          this.qizipre.x = -1
-          this.qizipre.y = -1
-        } else {
-          this.qizipre = { x, y }
-        }
-        this.qipanInit()
-      }
-    },
-  },
-  mounted() {
-    this.qipanInit()
-  },
+<script setup>
+import { roomQuit, roomStatusChange } from '../api/room'
+import { qipanInit, getQiziXY } from '../api/qipan'
+import store from '@/store'
+import { ref, onMounted } from 'vue'
+const ref_qipan = ref(null)
+const qizipre = ref({
+  x: -1,
+  y: -1,
+})
+const qizis = ref([])
+const getXY = function (e) {
+  getQiziXY(e, ref_qipan.value, qizipre.value, qizis.value)
 }
+
+onMounted(() => {
+  qipanInit(ref_qipan.value, qizipre.value, qizis.value)
+})
 </script>
+
 <style scoped>
 .qipan-btn {
   margin-top: 0.5rem;

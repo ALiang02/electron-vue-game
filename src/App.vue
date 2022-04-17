@@ -7,14 +7,14 @@
         router
         default-active="1"
       >
-        <el-menu-item index="1" :route="isInRoom">
+        <el-menu-item index="1" :route="this.$store.getters.isInRoomText">
           <span class="menu">五子棋</span>
         </el-menu-item>
         <el-menu-item index="2" route="/wuziqi">
           <span class="menu">棋盘</span>
         </el-menu-item>
         <el-menu-item index="3" route="/user">
-          <span class="menu">{{ userName }}</span>
+          <span class="menu">{{ this.$store.state.user.name }}</span>
         </el-menu-item>
       </el-menu>
     </el-col>
@@ -23,19 +23,7 @@
     </el-col>
   </el-row>
 </template>
-<script>
-export default {
-  computed: {
-    isInRoom() {
-      return this.$store.state.isInRoom ? '/wuziqi' : '/room'
-    },
-    userName() {
-      return this.$store.state.user.name
-    },
-  },
-  mounted() {},
-}
-</script>
+<script></script>
 <style>
 * {
   margin: 0;
