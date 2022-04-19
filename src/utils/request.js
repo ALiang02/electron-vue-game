@@ -19,6 +19,7 @@ export function RPC(url, data) {
       data: {
         room_id: store.state.room.id,
         user_id: store.state.user.id,
+        qipan_id: store.state.qipan.id,
         data: data || {},
       },
     })

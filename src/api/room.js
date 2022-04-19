@@ -6,9 +6,10 @@ import store from '@/store'
 
 export function roomJoin(room) {
   RPC('room_join', { room: { id: room.id } })
-    .then(() => {
+    .then(({ qipan_id }) => {
       router.push('/wuziqi')
       store.commit('SET_IS_IN_ROOM', true)
+      store.commit('SET_QIPAN_ID', qipan_id)
       store.commit('SET_ROOM', {
         id: room.id,
         name: room.name,
@@ -29,18 +30,23 @@ export function roomCreate() {
   ElMessageBox.prompt('请输入房间名', '选项', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
-  }).then(({ value }) => {
-    RPC('room_create', { room: { name: value } })
-      .then((data) => {
-        router.push('/wuziqi')
-        store.commit('SET_IS_IN_ROOM', true)
-        store.commit('SET_ROOM', data.room)
-        socket.emit('room_create', {
-          room: data.room.id,
-        })
-      })
-      .catch((e) => ElMessage({ message: '创建房间失败：' + e, type: 'error' }))
   })
+    .then(({ value }) => {
+      RPC('room_create', { room: { name: value } })
+        .then((data) => {
+          router.push('/wuziqi')
+          store.commit('SET_IS_IN_ROOM', true)
+          store.commit('SET_ROOM', data.room)
+          store.commit('SET_QIPAN_ID', data.qipan_id)
+          socket.emit('room_create', {
+            room: data.room.id,
+          })
+        })
+        .catch((e) =>
+          ElMessage({ message: '创建房间失败：' + e, type: 'error' })
+        )
+    })
+    .catch(() => {})
 }
 
 export function roomList(rooms) {
@@ -62,6 +68,7 @@ export function roomQuit() {
       })
       router.push('/room')
       store.commit('SET_IS_IN_ROOM', false)
+      store.commit('SET_QIPAN_TURN', false)
       store.commit('SET_ROOM', {
         id: '?',
         name: '?',
@@ -73,7 +80,7 @@ export function roomQuit() {
     .catch((e) => ElMessage({ message: '退出房间失败：' + e, type: 'error' }))
 }
 
-export function roomStatusChange() {
+export function roomStatusChange(qizis) {
   switch (store.getters.beginText) {
     case '准备':
       RPC('room_ready')
@@ -101,13 +108,21 @@ export function roomStatusChange() {
     case '开始游戏':
       if (store.getters.isReady) {
         RPC('room_start')
-          .then(() => {
+          .then(({ status }) => {
+            const turn = !status
+            store.commit('SET_QIPAN_TURN', turn)
+            store.commit
             store.commit('SET_ROOM_STATUS', 3)
+            qizis.length = 0
             socket.emit('room_start', {
               room: store.state.room.id,
               status: 3,
+              turn: false,
             })
-            ElMessage({ message: '游戏开始', type: 'success' })
+            ElMessage({
+              message: `游戏开始,你是${turn ? '先' : '后'}手方`,
+              type: 'success',
+            })
           })
           .catch((e) => ElMessage({ message: '失败：' + e, type: 'error' }))
       } else {

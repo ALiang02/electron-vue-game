@@ -27,7 +27,7 @@
             class="qipan-btn"
             size="large"
             type="primary"
-            @click="roomStatusChange"
+            @click="roomStatusChange(qizis)"
             round
             >{{ store.getters.beginText }}</el-button
           >
@@ -57,8 +57,10 @@
   </el-row>
 </template>
 <script setup>
+import { ElMessage } from 'element-plus'
+import { socket } from '@/utils/ws'
 import { roomQuit, roomStatusChange } from '../api/room'
-import { qipanInit, getQiziXY } from '../api/qipan'
+import { qipanInit, getQiziXY, drawVctLine } from '../api/qipan'
 import store from '@/store'
 import { ref, onMounted } from 'vue'
 const ref_qipan = ref(null)
@@ -68,9 +70,25 @@ const qizipre = ref({
 })
 const qizis = ref([])
 const getXY = function (e) {
+  if (!store.state.qipan.turn) return
   getQiziXY(e, ref_qipan.value, qizipre.value, qizis.value)
 }
+socket.on('xiaqi', (data) => {
+  store.commit('SET_QIPAN_TURN', true)
+  qizis.value.push(data.qizi)
+  qipanInit(ref_qipan.value, qizipre.value, qizis.value)
+})
+socket.on('victory', (data) => {
+  store.commit('SET_ROOM_STATUS', 1)
+  store.commit('SET_QIPAN_TURN', false)
 
+  drawVctLine(data.line, qizis.value.length - 1, ref_qipan.value)
+
+  ElMessage({
+    message: `你输了`,
+    type: 'success',
+  })
+})
 onMounted(() => {
   qipanInit(ref_qipan.value, qizipre.value, qizis.value)
 })

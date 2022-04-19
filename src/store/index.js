@@ -4,9 +4,6 @@ import createPersistedState from 'vuex-persistedstate'
 export default createStore({
   plugins: [createPersistedState()],
   state: {
-    todoArray: [],
-    finishedArray: [],
-    keepTimes: 0,
     isInRoom: false,
     user: {
       id: '',
@@ -19,6 +16,10 @@ export default createStore({
       status: -1,
       host: '玩家A',
       gamer: '玩家B',
+    },
+    qipan: {
+      id: '',
+      turn: '',
     },
   },
   getters: {
@@ -86,6 +87,12 @@ export default createStore({
     },
     SET_ROOM: (state, room) => {
       Object.assign(state.room, room)
+    },
+    SET_QIPAN_ID: (state, qipanId) => {
+      state.qipan.id = qipanId
+    },
+    SET_QIPAN_TURN: (state, qipanTurn) => {
+      state.qipan.turn = qipanTurn
     },
   },
 })
