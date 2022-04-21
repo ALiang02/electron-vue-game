@@ -51,12 +51,11 @@ body {
 body {
   margin: 0;
   padding: 0;
-  background-color: #c0c0c0;
 }
 #app {
-  height: 54rem;
-  width: 96rem;
-  margin: 2rem auto;
-  background-color: #808080;
+  height: 45rem;
+  width: 80rem;
+  margin: 0 auto;
+  background-color: antiquewhite;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <a-row class="room">
-    <a-col :span="6">
+    <a-col :span="5">
       <a-row class="panel">
         <a-col :span="24">
           <a-card class="user-panel" title="对手">123 </a-card>
@@ -13,21 +13,35 @@
         </a-col>
       </a-row>
     </a-col>
-    <a-col :span="12">
+    <a-col :span="14">
       <a-row class="panel">
-        <a-col>
+        <a-col :span="24">
           <a-card class="board-panel">
             <canvas ref="board_ref" width="601" height="601" @click="getXY" />
           </a-card>
         </a-col>
       </a-row>
     </a-col>
-    <a-col :span="6">
+    <a-col :span="5">
       <a-row class="panel">
         <a-col :span="24">
           <a-card class="message-panel">
             <a-tabs v-model:activeKey="activeKey" @tabClick="handleClick">
-              <a-tab-pane key="1" tab="Tab 1">Content of Tab Pane 1</a-tab-pane>
+              <a-tab-pane key="1" tab="Tab 1" class="tab-content">
+                <a-list
+                  item-layout="horizontal"
+                  :data-source="data"
+                  size="small"
+                  :split="false"
+                >
+                  <template #renderItem="{ item }">
+                    <a-list-item>
+                      <a-list-item-meta :description="item.title">
+                      </a-list-item-meta>
+                    </a-list-item>
+                  </template>
+                </a-list>
+              </a-tab-pane>
               <a-tab-pane key="2" tab="Tab 2" force-render
                 >Content of Tab Pane 2</a-tab-pane
               >
@@ -89,7 +103,8 @@ const data = [
       'Ant Design Title 2Ant Design Title 2Ant Design Title 2Ant Design Title 2',
   },
   {
-    title: 'Ant Design Title 3',
+    title:
+      'Ant Design Title 3Ant Design Title 3Ant Design Title 3Ant Design Title 3Ant Design Title 3Ant Design Title 3Ant Design Title 3',
   },
   {
     title: 'Ant Design Title 4',
@@ -125,32 +140,33 @@ const getXY = (e) => {
 
 <style scoped>
 .room {
-  /* margin: 2rem 0; */
-  height: 54rem;
-  background-color: antiquewhite;
+  height: 45rem;
 }
 .panel {
   height: 100%;
-  padding: 2rem;
+  padding: 0.5rem;
 }
 
 .user-panel {
-  height: 24rem;
+  height: 21rem;
 }
 .board-panel {
-  height: 49rem;
+  height: 43rem;
 }
 .message-panel {
-  height: 24rem;
+  height: 21rem;
+}
+.tab-content {
+  height: 15rem;
+  overflow: auto;
 }
 .chat-content {
-  font-size: 10px;
-  height: 18rem;
+  height: 16rem;
   overflow: auto;
 }
 .chat-edit {
   margin-top: 0.5rem;
-  height: 2.5rem;
+  height: 1.5rem;
 }
 
 canvas {
