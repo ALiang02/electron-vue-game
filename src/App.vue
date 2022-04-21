@@ -1,5 +1,5 @@
 <template>
-  <el-row class="main">
+  <!-- <el-row class="main">
     <el-col :span="4">
       <el-menu
         text-color="#000000"
@@ -21,11 +21,12 @@
     <el-col :span="20">
       <router-view />
     </el-col>
-  </el-row>
+  </el-row> -->
+  <router-view />
 </template>
 <script></script>
 <style>
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -45,5 +46,17 @@ body {
 }
 .menu {
   font-size: 1.2rem;
+} */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #c0c0c0;
+}
+#app {
+  height: 54rem;
+  width: 96rem;
+  margin: 2rem auto;
+  background-color: #808080;
 }
 </style>

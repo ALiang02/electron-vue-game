@@ -25,6 +25,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "add" */ '../views/UserView.vue'),
   },
+  {
+    path: '/roomview',
+    name: 'RoomView',
+    component: () =>
+      import(/* webpackChunkName: "add" */ '../components/RoomView.vue'),
+  },
 ]
 
 const router = createRouter({
