@@ -1,15 +1,23 @@
 <template>
-  <el-row
+  <a-row
     class="room-list-view"
     justify="center"
     style="height: 100%; align-items: center"
   >
-    <el-col :span="6" style="height: 6rem">
-      <a-card class="room-list">
-        <div style="text-align: center">
-          <h1>五子棋</h1>
+    <a-col :span="6" style="height: 6rem">
+      <a-card class="room-list" hoverable>
+        <div
+          style="text-align: center; font-size: 48px"
+          @click="
+            () => {
+              this.$router.push('/roomlistview')
+            }
+          "
+        >
+          五子棋
         </div>
       </a-card>
-    </el-col>
-  </el-row>
+    </a-col>
+  </a-row>
 </template>
+<script setup></script>

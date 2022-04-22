@@ -1,8 +1,8 @@
 import { RPC } from '@/utils/request'
 export default {
   state: {
-    account: '',
-    name: '', //用户名称
+    id: '',
+    account: '', //用户名称
   },
   mutations: {
     SET_USER_DATA: (state, data) => {
