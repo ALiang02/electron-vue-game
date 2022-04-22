@@ -22,7 +22,9 @@
       <router-view />
     </el-col>
   </el-row> -->
-  <router-view />
+  <div class="main">
+    <router-view />
+  </div>
 </template>
 <script></script>
 <style>
@@ -51,11 +53,19 @@ body {
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: antiquewhite;
 }
+
 #app {
+  height: 100%;
+  width: 100%;
+  background-color: antiquewhite;
+}
+.main {
   height: 45rem;
   width: 80rem;
   margin: 0 auto;
-  background-color: antiquewhite;
 }
 </style>
