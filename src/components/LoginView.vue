@@ -7,7 +7,7 @@
             style="width: 100%"
             :tab-list="tabList"
             :active-tab-key="key"
-            @tabChange="(key) => onTabChange(key, 'key')"
+            @tabChange="(key) => onTabChange(key)"
           >
             <template #title>
               <h2 style="text-align: center">GAME</h2>
@@ -17,23 +17,34 @@
                 <h3>{{ item.tab }}</h3>
               </div>
             </template>
-            <template v-if="key === 'login'">
-              <a-space
-                direction="vertical"
-                style="width: 100%; height: 10rem"
-                size="large"
+            <a-form
+              :model="formState"
+              ref="formRef"
+              autocomplete="off"
+              @finish="onFinish"
+              @finishFailed="onFinishFailed"
+            >
+              <a-form-item
+                name="account"
+                :rules="[{ required: true, message: '请输入账户' }]"
               >
                 <a-input
-                  v-model:value="userName"
-                  placeholder="账户名"
+                  v-model:value="formState.account"
+                  placeholder="账户"
                   size="large"
                 >
                   <template #prefix>
                     <user-outlined />
                   </template>
                 </a-input>
+              </a-form-item>
+
+              <a-form-item
+                name="password"
+                :rules="[{ required: true, message: '请输入密码' }]"
+              >
                 <a-input-password
-                  v-model:value="password"
+                  v-model:value="formState.password"
                   placeholder="密码"
                   size="large"
                 >
@@ -41,34 +52,16 @@
                     <lock-outlined />
                   </template>
                 </a-input-password>
-              </a-space>
-            </template>
-            <template v-else>
-              <a-space
-                direction="vertical"
-                style="width: 100%; height: 10rem"
-                size="large"
+              </a-form-item>
+              <a-form-item
+                v-if="key === 'register'"
+                name="passwordConfirm"
+                :rules="[
+                  { validator: checkPasswordConfirm, trigger: 'submit' },
+                ]"
               >
-                <a-input
-                  v-model:value="userName"
-                  placeholder="账户名"
-                  size="large"
-                >
-                  <template #prefix>
-                    <user-outlined />
-                  </template>
-                </a-input>
                 <a-input-password
-                  v-model:value="password"
-                  placeholder="密码"
-                  size="large"
-                >
-                  <template #prefix>
-                    <lock-outlined />
-                  </template>
-                </a-input-password>
-                <a-input-password
-                  v-model:value="passwordConfirm"
+                  v-model:value="formState.passwordConfirm"
                   placeholder="确认密码"
                   size="large"
                 >
@@ -76,15 +69,12 @@
                     <lock-outlined />
                   </template>
                 </a-input-password>
-              </a-space>
-            </template>
-            <a-button
-              type="primary"
-              block
-              size="large"
-              style="margin-top: 2rem"
-              >{{ key === 'login' ? '登录' : '注册' }}</a-button
-            >
+              </a-form-item>
+
+              <a-button type="primary" block size="large" html-type="submit">
+                {{ key === 'login' ? '登录' : '注册' }}
+              </a-button>
+            </a-form>
           </a-card>
         </a-col>
       </a-row>
@@ -92,8 +82,10 @@
   </a-row>
 </template>
 <script setup>
+import store from '@/store'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 const tabList = [
   {
     key: 'login',
@@ -104,15 +96,40 @@ const tabList = [
     tab: '注册',
   },
 ]
-const userName = ref('')
-const password = ref('')
-const passwordConfirm = ref('')
-const key = ref('login')
-const onTabChange = (value, type) => {
-  console.log(value, type)
+const formRef = ref(null)
+const formState = reactive({
+  account: '',
+  password: '',
+  passwordConfirm: '',
+})
 
-  if (type === 'key') {
-    key.value = value
+const onFinish = (values) => {
+  store
+    .dispatch(key.value.toUpperCase(), values)
+    .then(() => {
+      useRouter().push('/roomlistview')
+    })
+    .catch((e) => {
+      console.log(e)
+    })
+}
+
+const onFinishFailed = (errorInfo) => {
+  console.log('Failed:', errorInfo)
+}
+const key = ref('login')
+const onTabChange = (value) => {
+  formRef.value.clearValidate()
+  key.value = value
+}
+
+let checkPasswordConfirm = async (_rule, value) => {
+  if (!value) {
+    return Promise.reject('请确认密码')
+  } else if (value !== formState.password) {
+    return Promise.reject('密码不一致')
+  } else {
+    return Promise.resolve()
   }
 }
 </script>

@@ -70,7 +70,7 @@
               <a-col :span="24" class="chat-edit">
                 <a-input-group compact>
                   <a-input
-                    v-model:value="value19"
+                    v-model:value="chatMessage"
                     style="width: calc(100% - 80px)"
                     :maxlength="20"
                   />
@@ -91,6 +91,7 @@ import Board from '@/utils/board'
 const board_ref = ref(null)
 let board
 const activeKey = ref('1')
+const chatMessage = ref('')
 const handleClick = (tab, event) => {
   console.log(tab, event, activeKey)
 }
