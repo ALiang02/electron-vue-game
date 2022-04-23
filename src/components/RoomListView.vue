@@ -8,9 +8,9 @@
           :loading="loading"
           :pagination="{ pageSize: 8, position: ['bottomCenter'] }"
         >
-          <template #bodyCell="{ text, record, index, column }">
+          <template #bodyCell="{ record, column }">
             <template v-if="column.key === 'operation'">
-              <a @click="joinRoom(text, record, index, column)">加入</a>
+              <a @click="joinRoom(record)">加入</a>
             </template>
             <template v-if="column.key === 'status'">
               <div
@@ -153,13 +153,20 @@ const createRoom = () => {
     .catch(() => {})
 }
 
+const joinRoom = (record) => {
+  store
+    .dispatch('JOIN_ROOM', { id: record.id })
+    .then(() => {
+      router.push('/roomview')
+    })
+    .catch((e) => {
+      message.error(e)
+    })
+}
+
 onMounted(() => {
   getRoomList()
 })
-
-const joinRoom = (...args) => {
-  console.log(args)
-}
 </script>
 
 <style scoped>

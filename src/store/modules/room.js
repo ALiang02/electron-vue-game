@@ -1,7 +1,7 @@
 import { RPC } from '@/utils/request'
 export default {
   state: {
-    id: '',
+    id: -1,
     name: '', //房间名称
     host: '', //房主名称
     gamer: '', //玩家名称
@@ -21,6 +21,22 @@ export default {
     CREATE_ROOM: ({ commit }, data) => {
       return RPC('room_create', data).then((repData) => {
         commit('SET_ROOM_DATA', repData)
+      })
+    },
+    JOIN_ROOM: ({ commit }, data) => {
+      return RPC('room_join', data).then((repData) => {
+        commit('SET_ROOM_DATA', repData)
+      })
+    },
+    QUIT_ROOM: ({ commit }) => {
+      return RPC('room_quit').then(() => {
+        commit('SET_ROOM_DATA', {
+          id: -1,
+          name: '',
+          host: '',
+          gamer: '',
+          status: -1,
+        })
       })
     },
   },
