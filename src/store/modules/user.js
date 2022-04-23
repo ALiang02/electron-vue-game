@@ -1,8 +1,8 @@
 import { RPC } from '@/utils/request'
 export default {
   state: {
-    id: '',
     account: '', //用户名称
+    name: '',
   },
   mutations: {
     SET_USER_DATA: (state, data) => {
@@ -20,6 +20,7 @@ export default {
     REGISTER: ({ commit }, reqData) => {
       return RPC('register', {
         account: reqData.account,
+        name: reqData.name,
         password: reqData.password,
       }).then((repData) => {
         commit('SET_USER_DATA', repData)

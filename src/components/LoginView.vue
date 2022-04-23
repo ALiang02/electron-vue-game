@@ -38,7 +38,21 @@
                   </template>
                 </a-input>
               </a-form-item>
-
+              <a-form-item
+                v-if="key === 'register'"
+                name="name"
+                :rules="[{ required: true, message: '请输入名称' }]"
+              >
+                <a-input
+                  v-model:value="formState.name"
+                  placeholder="名称"
+                  size="large"
+                >
+                  <template #prefix>
+                    <my-icon type="icon-namecard" />
+                  </template>
+                </a-input>
+              </a-form-item>
               <a-form-item
                 name="password"
                 :rules="[{ required: true, message: '请输入密码' }]"
@@ -83,6 +97,7 @@
 </template>
 <script setup>
 import store from '@/store'
+import { message } from 'ant-design-vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -99,18 +114,21 @@ const tabList = [
 const formRef = ref(null)
 const formState = reactive({
   account: '',
+  name: '',
   password: '',
   passwordConfirm: '',
 })
+const router = useRouter()
 
 const onFinish = (values) => {
+  console.log(values)
   store
     .dispatch(key.value.toUpperCase(), values)
     .then(() => {
-      useRouter().push('/roomlistview')
+      router.push('/homeview')
     })
     .catch((e) => {
-      console.log(e)
+      message.error(e)
     })
 }
 

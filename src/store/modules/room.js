@@ -1,3 +1,4 @@
+import { RPC } from '@/utils/request'
 export default {
   state: {
     id: '',
@@ -13,6 +14,13 @@ export default {
     SET_ROOM_DATA: (state, data) => {
       Object.keys(data).forEach(function (key) {
         state[key] = data[key]
+      })
+    },
+  },
+  actions: {
+    CREATE_ROOM: ({ commit }, data) => {
+      return RPC('room_create', data).then((repData) => {
+        commit('SET_ROOM_DATA', repData)
       })
     },
   },
