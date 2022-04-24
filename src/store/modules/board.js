@@ -2,8 +2,7 @@
 export default {
   state: {
     id: '',
-    firstHand: '',
-    secondHand: '',
+    turn: false,
     chesses: [],
     chessPre: [-1, -1],
     status: -1, //-1未开始，0先手方，1后手方，2和局，3先手方胜，4后手方胜

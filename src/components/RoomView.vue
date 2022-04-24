@@ -9,6 +9,9 @@
           <a-card class="user-panel" title="个人">
             <p>战绩</p>
             <p>战绩</p>
+            <a-button @click="room_btn_fn">{{ room_btn_tx }}</a-button>
+            <a-button @click="hand_change">交换先手方</a-button>
+            <a-button @click="room_quit">退出房间</a-button>
           </a-card>
         </a-col>
       </a-row>
@@ -86,12 +89,15 @@
 </template>
 <script setup>
 import store from '@/store'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import Board from '@/utils/board'
 const board_ref = ref(null)
 let board
 const activeKey = ref('1')
 const chatMessage = ref('')
+
 const handleClick = (tab, event) => {
   console.log(tab, event, activeKey)
 }
@@ -136,6 +142,66 @@ const getXY = (e) => {
     store.commit('SET_BOARD_DATA', { chessPre: [x, y] })
     board.chessPreInit()
   }
+}
+
+const isHost = computed(() => {
+  return store.state.user.name === store.state.room.host
+})
+
+const room_btn_tx = computed(() => {
+  if (isHost.value) {
+    return '开始游戏'
+  } else {
+    if (store.state.room.status === 1) {
+      return '准备'
+    } else {
+      return '取消准备'
+    }
+  }
+})
+
+const room_btn_fn = () => {
+  if (isHost.value) {
+    if (store.state.room.status === 0) {
+      message.error('请等待玩家加入')
+    } else if (store.state.room.status === 1) {
+      message.error('请等待玩家准备')
+    } else {
+      store
+        .dispatch('START_ROOM', { hostFirst: hostFirst.value })
+        .catch((e) => {
+          message.error(e)
+        })
+    }
+  } else {
+    let method
+    if (store.state.room.status === 1) {
+      method = 'READY_ROOM'
+    } else {
+      method = 'CANCEL_READY_ROOM'
+    }
+    store.dispatch(method).catch((e) => {
+      message.error(e)
+    })
+  }
+}
+
+const hostFirst = ref(false)
+const hand_change = () => {
+  hostFirst.value = !hostFirst.value
+}
+
+const router = useRouter()
+
+const room_quit = () => {
+  store
+    .dispatch('QUIT_ROOM')
+    .then(() => {
+      router.back()
+    })
+    .catch((e) => {
+      message.error(e)
+    })
 }
 </script>
 

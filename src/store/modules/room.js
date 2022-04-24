@@ -29,14 +29,26 @@ export default {
       })
     },
     QUIT_ROOM: ({ commit }) => {
-      return RPC('room_quit').then(() => {
+      return RPC('room_quit').then((repData) => {
+        commit('SET_ROOM_DATA', repData)
+      })
+    },
+    READY_ROOM: ({ commit }) => {
+      return RPC('room_ready').then((repData) => {
+        commit('SET_ROOM_DATA', repData)
+      })
+    },
+    CANCEL_READY_ROOM: ({ commit }) => {
+      return RPC('room_ready_cancel').then((repData) => {
+        commit('SET_ROOM_DATA', repData)
+      })
+    },
+    START_ROOM: ({ commit }, data) => {
+      return RPC('room_start', data).then((repData) => {
         commit('SET_ROOM_DATA', {
-          id: -1,
-          name: '',
-          host: '',
-          gamer: '',
-          status: -1,
+          status: repData.status,
         })
+        commit('SET_BOARD_DATA', repData.board)
       })
     },
   },

@@ -2,6 +2,14 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   {
+    path: '/',
+    redirect: () => {
+      // 方法接收目标路由作为参数
+      // return 重定向的字符串路径/路径对象
+      return { path: '/loginview' }
+    },
+  },
+  {
     path: '/wuziqi',
     name: 'WuziQi',
     component: () =>
