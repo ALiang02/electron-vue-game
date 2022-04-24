@@ -1,4 +1,4 @@
-// import { RPC } from '@/utils/request'
+import { RPC } from '@/utils/request'
 export default {
   state: {
     id: '',
@@ -14,15 +14,15 @@ export default {
       })
     },
     ADD_CHESS: (state, chess) => {
-      state.chesses.push(chess)
+      state.chesses = state.chesses.concat([chess])
     },
   },
   actions: {
     CHESS_ON: ({ commit, state }) => {
-      // return RPC('chess_on', state.chessPre).then(() => {
-      commit('ADD_CHESS', state.chessPre)
-      commit('SET_BOARD_DATA', { chessPre: [-1, -1] })
-      // })
+      return RPC('chess_on', { chess: state.chessPre }).then((data) => {
+        commit('SET_BOARD_DATA', { chessPre: data.chessPre })
+        commit('ADD_CHESS', data.chess)
+      })
     },
   },
 }

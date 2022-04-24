@@ -1,4 +1,3 @@
-import store from '@/store'
 class Board {
   constructor(board) {
     this.board = board.getContext('2d')
@@ -34,15 +33,8 @@ class Board {
     this.board.arc(440 + 0.5 + 20, 440 + 0.5 + 20, 4, 0, Math.PI * 2)
     this.board.closePath()
     this.board.fill()
-
-    this.chessPreInit()
-
-    for (let i = 0; i < store.state.board.chesses.length; i++) {
-      this.chessInit(store.state.board.chesses[i], i)
-    }
   }
-  chessPreInit() {
-    let [x, y] = store.state.board.chessPre
+  chessPreInit([x, y]) {
     // x,y是坐标,画上预选位置
     if (x === -1 || y === -1) {
       return
@@ -67,8 +59,7 @@ class Board {
     this.board.lineTo(x - 2 + 0.5 + 20, y - 16 + 0.5 + 20)
     this.board.stroke()
   }
-  chessPreReset() {
-    let [x, y] = store.state.board.chessPre
+  chessPreClear([x, y]) {
     // x,y是坐标,画上预选位置
     if (x === -1 || y === -1) {
       return

@@ -10,8 +10,10 @@
             <p>战绩</p>
             <p>战绩</p>
             <a-button @click="room_btn_fn">{{ room_btn_tx }}</a-button>
-            <a-button @click="hand_change">交换先手方</a-button>
-            <a-button @click="room_quit">退出房间</a-button>
+            <a-button v-show="room_btn_show" @click="hand_change">
+              交换先手方
+            </a-button>
+            <a-button @click="room_quit"> 退出房间 </a-button>
           </a-card>
         </a-col>
       </a-row>
@@ -89,7 +91,7 @@
 </template>
 <script setup>
 import store from '@/store'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import Board from '@/utils/board'
@@ -122,6 +124,23 @@ onMounted(() => {
   board.boardInit()
 })
 
+const chessPre = computed(() => store.state.board.chessPre)
+const chesses = computed(() => store.state.board.chesses)
+watch(chessPre, (newValue, oldValue) => {
+  if (newValue[0] === -1 && newValue[1] === -1) {
+    board.chessPreClear(oldValue)
+  } else if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+    board.chessPreClear(oldValue)
+    board.chessPreInit(newValue)
+  }
+})
+watch(chesses, (newValue, oldValue) => {
+  console.log(chesses, newValue, oldValue)
+  if (newValue.length !== 0) {
+    board.chessInit(newValue[oldValue.length], oldValue.length)
+  }
+})
+
 const getXY = (e) => {
   let [x, y] = board.getXY(e)
   if (x === -1 && y === -1) return
@@ -129,23 +148,20 @@ const getXY = (e) => {
   let chessPre = store.state.board.chessPre
   if (chesses.find((chess) => chess[0] === x && chess[1] === y)) return
   if (chessPre[0] === x && chessPre[1] === y) {
-    store
-      .dispatch('CHESS_ON')
-      .then(() => {
-        board.chessInit([x, y], chesses.length)
-      })
-      .catch((e) => {
-        console.log(e)
-      })
+    store.dispatch('CHESS_ON').catch((e) => {
+      message.error(e)
+    })
   } else {
-    board.chessPreReset()
     store.commit('SET_BOARD_DATA', { chessPre: [x, y] })
-    board.chessPreInit()
   }
 }
 
 const isHost = computed(() => {
   return store.state.user.name === store.state.room.host
+})
+
+const room_btn_show = computed(() => {
+  return store.state.room.status === 3
 })
 
 const room_btn_tx = computed(() => {
