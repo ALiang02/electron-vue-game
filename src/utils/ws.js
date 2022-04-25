@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client'
 import store from '../store'
-import { ElMessage } from 'element-plus'
+import { message } from 'ant-design-vue'
 
 let socket
 const socketInit = function (url = 'http://localhost:3000') {
@@ -32,10 +32,7 @@ const listenersInit = function () {
   socket.on('room_start', (data) => {
     store.commit('SET_ROOM_DATA', data.room)
     store.commit('SET_BOARD_DATA', data.board)
-    ElMessage({
-      message: `游戏开始,你是${data.board.turn ? '先' : '后'}手方`,
-      type: 'success',
-    })
+    message.success(`游戏开始,你是${data.board.turn ? '先' : '后'}手方`)
   })
   socket.on('chess_on', (data) => {
     store.commit('ADD_CHESS', data.chess)

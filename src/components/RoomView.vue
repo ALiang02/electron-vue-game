@@ -125,6 +125,9 @@ onMounted(() => {
   for (let i = 0; i < chesses.value.length; i++) {
     board.chessInit(chesses.value[i], i)
   }
+  if (line.value) {
+    board.drawVctLine(line.value, chesses.value.length - 1)
+  }
 })
 
 const chessPre = computed(() => store.state.board.chessPre)
@@ -142,6 +145,8 @@ watch(chesses, (newValue, oldValue) => {
   console.log(chesses, newValue, oldValue)
   if (newValue.length !== 0) {
     board.chessInit(newValue[oldValue.length], oldValue.length)
+  } else {
+    board.boardInit()
   }
 })
 watch(line, (newValue) => {
@@ -203,6 +208,11 @@ const room_btn_fn = () => {
     } else {
       store
         .dispatch('START_ROOM', { hostFirst: hostFirst.value })
+        .then(() => {
+          message.success(
+            `游戏开始,你是${store.state.board.turn ? '先' : '后'}手方`
+          )
+        })
         .catch((e) => {
           message.error(e)
         })

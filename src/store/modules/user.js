@@ -14,7 +14,9 @@ export default {
   actions: {
     LOGIN: ({ commit }, reqData) => {
       return RPC('login', reqData).then((repData) => {
-        commit('SET_USER_DATA', repData)
+        commit('SET_USER_DATA', repData.user)
+        commit('SET_ROOM_DATA', repData.room)
+        commit('SET_BOARD_DATA', repData.board)
       })
     },
     REGISTER: ({ commit }, reqData) => {
@@ -23,7 +25,9 @@ export default {
         name: reqData.name,
         password: reqData.password,
       }).then((repData) => {
-        commit('SET_USER_DATA', repData)
+        commit('SET_USER_DATA', repData.user)
+        commit('SET_ROOM_DATA', repData.room)
+        commit('SET_BOARD_DATA', repData.board)
       })
     },
   },

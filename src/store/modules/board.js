@@ -1,7 +1,7 @@
 import { RPC } from '@/utils/request'
 export default {
   state: {
-    id: '',
+    id: -1,
     turn: false,
     chesses: [],
     chessPre: [-1, -1],
