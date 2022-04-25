@@ -28,12 +28,6 @@ const routes = [
       import(/* webpackChunkName: "add" */ '../components/LoginView.vue'),
   },
   {
-    path: '/registerview',
-    name: 'RegisterView',
-    component: () =>
-      import(/* webpackChunkName: "add" */ '../components/RegisterView.vue'),
-  },
-  {
     path: '/homeview',
     name: 'HomeView',
     component: () =>
