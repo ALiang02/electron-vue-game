@@ -122,10 +122,14 @@ const data = [
 onMounted(() => {
   board = new Board(board_ref.value)
   board.boardInit()
+  for (let i = 0; i < chesses.value.length; i++) {
+    board.chessInit(chesses.value[i], i)
+  }
 })
 
 const chessPre = computed(() => store.state.board.chessPre)
 const chesses = computed(() => store.state.board.chesses)
+const line = computed(() => store.state.board.line)
 watch(chessPre, (newValue, oldValue) => {
   if (newValue[0] === -1 && newValue[1] === -1) {
     board.chessPreClear(oldValue)
@@ -140,8 +144,22 @@ watch(chesses, (newValue, oldValue) => {
     board.chessInit(newValue[oldValue.length], oldValue.length)
   }
 })
+watch(line, (newValue) => {
+  if (newValue) {
+    board.drawVctLine(newValue, chesses.value.length - 1)
+    if (
+      (chesses.value.length % 2 === 1 && hostFirst) ||
+      (chesses.value.length % 2 === 0 && !hostFirst.value)
+    ) {
+      message.success(`${store.state.room.host}赢了`)
+    } else {
+      message.success(`${store.state.room.gamer}赢了`)
+    }
+  }
+})
 
 const getXY = (e) => {
+  if (!store.state.board.turn) return
   let [x, y] = board.getXY(e)
   if (x === -1 && y === -1) return
   let chesses = store.state.board.chesses
@@ -202,7 +220,7 @@ const room_btn_fn = () => {
   }
 }
 
-const hostFirst = ref(false)
+const hostFirst = ref(true)
 const hand_change = () => {
   hostFirst.value = !hostFirst.value
 }

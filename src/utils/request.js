@@ -20,6 +20,7 @@ export function RPC(url, data) {
         room: store.state.room.id,
         account: store.state.user.account,
         board: store.state.board.id,
+        socket: store.state.socket,
         data: data || {},
       },
     })

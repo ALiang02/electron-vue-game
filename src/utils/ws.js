@@ -6,7 +6,11 @@ let socket
 const socketInit = function (url = 'http://localhost:3000') {
   socket = io(url)
   socket.on('connect', () => {
+    store.commit('SET_SOCKET', socket.id)
     listenersInit()
+    if (store.state.room.id > 0) {
+      socket.emit('join_room', { room: store.state.room.id })
+    }
   })
 }
 const listenersInit = function () {
@@ -35,6 +39,7 @@ const listenersInit = function () {
   })
   socket.on('chess_on', (data) => {
     store.commit('ADD_CHESS', data.chess)
+    store.commit('SET_BOARD_DATA', { turn: data.turn })
   })
   socket.on('chess_victory', (data) => {
     store.commit('SET_BOARD_DATA', data.board)

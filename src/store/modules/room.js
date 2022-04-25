@@ -30,7 +30,8 @@ export default {
     },
     QUIT_ROOM: ({ commit }) => {
       return RPC('room_quit').then((repData) => {
-        commit('SET_ROOM_DATA', repData)
+        commit('SET_ROOM_DATA', repData.room)
+        commit('SET_BOARD_DATA', repData.board)
       })
     },
     READY_ROOM: ({ commit }) => {

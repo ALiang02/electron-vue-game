@@ -110,11 +110,11 @@ class Board {
   }
   drawVctLine(line, n) {
     this.board.lineWidth = 10
-    this.board.moveTo(line[0].x * 40 + 0.5 + 20, line[0].y * 40 + 0.5 + 20)
-    this.board.lineTo(line[1].x * 40 + 0.5 + 20, line[1].y * 40 + 0.5 + 20)
-    this.board.lineTo(line[2].x * 40 + 0.5 + 20, line[2].y * 40 + 0.5 + 20)
-    this.board.lineTo(line[3].x * 40 + 0.5 + 20, line[3].y * 40 + 0.5 + 20)
-    this.board.lineTo(line[4].x * 40 + 0.5 + 20, line[4].y * 40 + 0.5 + 20)
+    this.board.moveTo(line[0][0] * 40 + 0.5 + 20, line[0][1] * 40 + 0.5 + 20)
+    this.board.lineTo(line[1][0] * 40 + 0.5 + 20, line[1][1] * 40 + 0.5 + 20)
+    this.board.lineTo(line[2][0] * 40 + 0.5 + 20, line[2][1] * 40 + 0.5 + 20)
+    this.board.lineTo(line[3][0] * 40 + 0.5 + 20, line[3][1] * 40 + 0.5 + 20)
+    this.board.lineTo(line[4][0] * 40 + 0.5 + 20, line[4][1] * 40 + 0.5 + 20)
     if (n % 2 === 0) {
       this.board.strokeStyle = 'black'
     } else {

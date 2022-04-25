@@ -3,7 +3,10 @@
     <router-view />
   </div>
 </template>
-<script></script>
+<script setup>
+import { socketInit } from '@/utils/ws'
+socketInit()
+</script>
 <style>
 body {
   margin: 0;

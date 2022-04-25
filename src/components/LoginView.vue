@@ -96,13 +96,11 @@
   </a-row>
 </template>
 <script setup>
-import { socketInit } from '@/utils/ws'
 import store from '@/store'
 import { message } from 'ant-design-vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-socketInit()
 const tabList = [
   {
     key: 'login',
