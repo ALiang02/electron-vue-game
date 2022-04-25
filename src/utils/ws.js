@@ -2,13 +2,14 @@ import { io } from 'socket.io-client'
 import store from '../store'
 import { ElMessage } from 'element-plus'
 
-const socket = io('http://localhost:3000')
-socket.on('connect', () => {
-  socket.on('success', (data) => {
-    console.log(data)
-    socket.emit('mytask', { data: { a: 2 } })
+let socket
+const socketInit = function (url = 'http://localhost:3000') {
+  socket = io(url)
+  socket.on('connect', () => {
+    listenersInit()
   })
-
+}
+const listenersInit = function () {
   socket.on('quit', (id) => {
     console.log(`${id}连接断开`)
   })
@@ -39,5 +40,5 @@ socket.on('connect', () => {
     store.commit('SET_BOARD_DATA', data.board)
     store.commit('SET_ROOM_DATA', data.room)
   })
-})
-export { socket }
+}
+export { socket, socketInit }
