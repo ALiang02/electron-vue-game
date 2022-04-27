@@ -22,6 +22,7 @@ body {
   background-color: antiquewhite;
 }
 .main {
+  position: relative;
   height: 45rem;
   width: 80rem;
   margin: 0 auto;

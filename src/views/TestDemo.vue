@@ -5,18 +5,18 @@
     height="720"
     @click="
       () => {
-        slot_show = !slot_show
+        div_class = 'div_after'
       }
     "
   >
   </canvas>
-  <v-slot v-show="slot_show">
-    <div>12312</div>
+  <v-slot>
+    <div :class="div_class">12312</div>
   </v-slot>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-const slot_show = ref(false)
+const div_class = ref('div_before')
 const c = ref(null)
 let ctx,
   w = 1280,
@@ -198,7 +198,15 @@ canvas {
   background-color: black;
   z-index: 1;
 }
-div {
+
+.div_before {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: azure;
+  z-index: 2;
+}
+.div_after {
   position: absolute;
   width: 200px;
   height: 200px;
@@ -207,5 +215,25 @@ div {
 }
 body {
   overflow: hidden;
+}
+div {
+  animation-duration: 3s;
+  animation-name: slidein;
+}
+
+@keyframes slidein {
+  from {
+    width: 0;
+    height: 0;
+    z-index: 2;
+    opacity: 0;
+  }
+
+  to {
+    width: 200px;
+    height: 200px;
+    z-index: 2;
+    opacity: 1;
+  }
 }
 </style>
