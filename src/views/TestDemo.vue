@@ -1,23 +1,37 @@
 <template>
-  <canvas
-    ref="c"
-    width="1280"
-    height="720"
-    @click="
-      () => {
-        div_class = 'div_after'
-      }
-    "
-  >
-  </canvas>
+  <canvas ref="c" width="1280" height="720"> </canvas>
   <v-slot>
-    <div :class="div_class">12312</div>
+    <div>
+      <video
+        ref="myVideo"
+        playsinline
+        autoplay
+        height="200"
+        width="200"
+      ></video>
+    </div>
   </v-slot>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-const div_class = ref('div_before')
 const c = ref(null)
+const myVideo = ref(null)
+const mediaStreamConstraints = {
+  // video: { facingMode: { exact: 'environment' }, width: { ideal: 1080 }, height: { ideal: 1920 } }, // 开启手机后置摄像头
+  video: true,
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+  },
+}
+
+onMounted(() => {
+  navigator.mediaDevices.getUserMedia(mediaStreamConstraints).then((stream) => {
+    console.log(myVideo)
+    myVideo.value.srcObject = stream
+  })
+})
 let ctx,
   w = 1280,
   h = 720
@@ -199,24 +213,18 @@ canvas {
   z-index: 1;
 }
 
-.div_before {
+div {
   position: absolute;
   width: 200px;
   height: 200px;
   background-color: azure;
   z-index: 2;
 }
-.div_after {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: azure;
-  z-index: 2;
-}
+
 body {
   overflow: hidden;
 }
-div {
+video {
   animation-duration: 3s;
   animation-name: slidein;
 }
